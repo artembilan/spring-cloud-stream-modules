@@ -81,8 +81,9 @@ public class CassandraSinkConfiguration {
 	@ServiceActivator(inputChannel= Sink.INPUT)
 	public MessageHandler bridgeMessageHandler() {
 		AbstractMessageProducingHandler messageHandler;
-		if (StringUtils.hasText(cassandraSinkProperties.getIngestQuery())) {
-			messageHandler = new MessageTransformingHandler(new PayloadToMatrixTransformer(cassandraSinkProperties.getIngestQuery()));
+		if (StringUtils.hasText(this.cassandraSinkProperties.getIngestQuery())) {
+			messageHandler = new MessageTransformingHandler(
+					new PayloadToMatrixTransformer(this.cassandraSinkProperties.getIngestQuery()));
 		}
 		else {
 			messageHandler = new BridgeHandler();
@@ -94,17 +95,21 @@ public class CassandraSinkConfiguration {
 	@Bean
 	@ServiceActivator(inputChannel = "toSink")
 	public MessageHandler cassandraSinkMessageHandler() {
-		CassandraMessageHandler<?> cassandraMessageHandler = new CassandraMessageHandler<>(this.template, cassandraSinkProperties.getQueryType());
+		CassandraMessageHandler<?> cassandraMessageHandler =
+				new CassandraMessageHandler<>(this.template, this.cassandraSinkProperties.getQueryType());
 		cassandraMessageHandler.setProducesReply(false);
-		if (cassandraSinkProperties.getConsistencyLevel() != null || cassandraSinkProperties.getRetryPolicy() != null || cassandraSinkProperties.getTtl() > 0) {
+		if (this.cassandraSinkProperties.getConsistencyLevel() != null
+				|| this.cassandraSinkProperties.getRetryPolicy() != null
+				|| this.cassandraSinkProperties.getTtl() > 0) {
 			cassandraMessageHandler.setWriteOptions(
-					new WriteOptions(cassandraSinkProperties.getConsistencyLevel(), cassandraSinkProperties.getRetryPolicy(), cassandraSinkProperties.getTtl()));
+					new WriteOptions(this.cassandraSinkProperties.getConsistencyLevel(),
+							this.cassandraSinkProperties.getRetryPolicy(), this.cassandraSinkProperties.getTtl()));
 		}
-		if (StringUtils.hasText(cassandraSinkProperties.getIngestQuery())) {
-			cassandraMessageHandler.setIngestQuery(cassandraSinkProperties.getIngestQuery());
+		if (StringUtils.hasText(this.cassandraSinkProperties.getIngestQuery())) {
+			cassandraMessageHandler.setIngestQuery(this.cassandraSinkProperties.getIngestQuery());
 		}
-		else if (cassandraSinkProperties.getStatementExpression() != null) {
-			cassandraMessageHandler.setStatementExpression(cassandraSinkProperties.getStatementExpression());
+		else if (this.cassandraSinkProperties.getStatementExpression() != null) {
+			cassandraMessageHandler.setStatementExpression(this.cassandraSinkProperties.getStatementExpression());
 		}
 		return cassandraMessageHandler;
 	}

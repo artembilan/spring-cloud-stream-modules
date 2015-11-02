@@ -24,10 +24,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cassandra.config.CassandraCqlClusterFactoryBean;
 import org.springframework.cassandra.config.CompressionType;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /**
- * Properties for the cassandra sink.
+ * Common properties for the cassandra modules.
  *
  * @author Artem Bilan
  * @author Thomas Risberg
@@ -62,9 +63,9 @@ public class CassandraProperties {
 	private String password;
 
 	/**
-	 * The path to file with CQL scripts (delimited by ';') to initialize keyspace schema.
+	 * The resource with CQL scripts (delimited by ';') to initialize keyspace schema.
 	 */
-	private String initScript;
+	private Resource initScript;
 
 	/**
 	 * The base packages to scan for entities annotated with Table annotations.
@@ -101,7 +102,7 @@ public class CassandraProperties {
 		this.password = password;
 	}
 
-	public void setInitScript(String initScript) {
+	public void setInitScript(Resource initScript) {
 		this.initScript = initScript;
 	}
 
@@ -139,7 +140,7 @@ public class CassandraProperties {
 		return this.password;
 	}
 
-	public String getInitScript() {
+	public Resource getInitScript() {
 		return this.initScript;
 	}
 

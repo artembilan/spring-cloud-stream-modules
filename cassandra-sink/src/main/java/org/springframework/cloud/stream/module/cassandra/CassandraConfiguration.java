@@ -68,8 +68,9 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
 
 	@Override
 	protected AuthProvider getAuthProvider() {
-		if (StringUtils.hasText(cassandraProperties.getUsername())) {
-			return new PlainTextAuthProvider(cassandraProperties.getUsername(), cassandraProperties.getPassword());
+		if (StringUtils.hasText(this.cassandraProperties.getUsername())) {
+			return new PlainTextAuthProvider(this.cassandraProperties.getUsername(),
+					this.cassandraProperties.getPassword());
 		}
 		else {
 			return null;
@@ -83,22 +84,22 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
 
 	@Override
 	public String[] getEntityBasePackages() {
-		return cassandraProperties.getEntityBasePackages();
+		return this.cassandraProperties.getEntityBasePackages();
 	}
 
 	@Override
 	protected CompressionType getCompressionType() {
-		return cassandraProperties.getCompressionType();
+		return this.cassandraProperties.getCompressionType();
 	}
 
 	@Override
 	protected boolean getMetricsEnabled() {
-		return cassandraProperties.isMetricsEnabled();
+		return this.cassandraProperties.isMetricsEnabled();
 	}
 
 	@Override
 	protected List<CreateKeyspaceSpecification> getKeyspaceCreations() {
-		if (ObjectUtils.isEmpty(getEntityBasePackages()) || cassandraProperties.getInitScript() != null) {
+		if (ObjectUtils.isEmpty(getEntityBasePackages()) || this.cassandraProperties.getInitScript() != null) {
 			return Collections.singletonList(CreateKeyspaceSpecification.createKeyspace(getKeyspaceName())
 					.withSimpleReplication()
 					.ifNotExists());
@@ -127,8 +128,8 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
 		@PostConstruct
 		public void init() throws IOException {
 			if (cassandraProperties.getInitScript() != null) {
-				Resource initScriptResource = new DefaultResourceLoader().getResource(cassandraProperties.getInitScript());
-				String scripts = new Scanner(initScriptResource.getInputStream(), "UTF-8").useDelimiter("\\A").next();
+				String scripts = new Scanner(this.cassandraProperties.getInitScript().getInputStream(),
+						"UTF-8").useDelimiter("\\A").next();
 
 				CqlTemplate template = new CqlTemplate(this.session);
 
@@ -139,6 +140,8 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
 				}
 			}
 		}
+
 	}
+
 }
 

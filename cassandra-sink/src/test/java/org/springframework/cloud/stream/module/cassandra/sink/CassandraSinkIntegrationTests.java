@@ -16,11 +16,22 @@
 
 package org.springframework.cloud.stream.module.cassandra.sink;
 
-import com.datastax.driver.core.utils.UUIDs;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.cassandra.exceptions.ConfigurationException;
+import org.apache.thrift.transport.TTransportException;
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -35,23 +46,12 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.apache.cassandra.exceptions.ConfigurationException;
-import org.apache.thrift.transport.TTransportException;
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
-
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
+import com.datastax.driver.core.utils.UUIDs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Artem Bilan
@@ -133,6 +133,7 @@ public abstract class CassandraSinkIntegrationTests {
 
 			cassandraTemplate.delete(book);
 		}
+
 	}
 
 
@@ -165,6 +166,7 @@ public abstract class CassandraSinkIntegrationTests {
 
 			cassandraTemplate.truncate("book");
 		}
+
 	}
 
 
@@ -196,7 +198,9 @@ public abstract class CassandraSinkIntegrationTests {
 	}
 
 	private interface Supplier<T> {
+
 		T get();
+
 	}
 
 }
