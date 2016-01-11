@@ -12,19 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cloud.stream.module.trigger;
+
+package org.springframework.cloud.stream.module.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.cloud.stream.messaging.Source;
+import org.springframework.integration.annotation.InboundChannelAdapter;
+import org.springframework.integration.annotation.Poller;
 
 /**
- * @author Ilayaperumal Gopinathan
+ * @author Artem Bilan
  */
-public class TriggerConstants {
-
-	public static final String TRIGGER_BEAN_NAME = "POLLER_TRIGGER";
-
-	public static final String DATE_FORMAT = "MM/dd/yy HH:mm:ss";
-
-	public static final String CRON_TRIGGER_OPTION = "cron";
-
-	public static final String DATE_TRIGGER_OPTION = "date";
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller("defaultPoller"))
+public @interface MessageSource {
 
 }

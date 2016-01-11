@@ -14,13 +14,13 @@ TriggerSource:: configures the Inbound Channel Adapter bean
 Trigger source re-uses the common trigger package `org.springframework.cloud.stream.module.trigger` for trigger
 configuration, properties etc.,
 Trigger source supports properties derived from TriggerProperties:
-  * payload    a SpEL expression (default = '')
-  * fixedDelay fixed delay for the Periodic trigger
-  * initialDelay initial delay for the Periodic trigger
-  * timeUnit time unit to apply for delay (default = seconds)
-  * date date value for the trigger
-  * dateFormat format for the date value
-  * cron the Cron expression for the Cron Trigger
+  * payload - a SpEL expression (default = '')
+  * fixedDelay - fixed delay for the Periodic trigger
+  * initialDelay - initial delay for the Periodic trigger
+  * timeUnit - time unit to apply for delay (default = seconds)
+  * date - the date value for the trigger
+  * dateFormat - format for the date value
+  * cron - the Cron expression for the Cron Trigger
 
 == Build
 

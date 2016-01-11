@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2015-2016 the original author or authors.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MaxMessagesProperties {
 
 	/**
-	 * Maximum messages per poll. Default is -1 meaning no maximum.
+	 * Maximum messages per poll.
+	 * Defaults to -1 (infinity) for polling consumers and 1 for polling inbound channel adapters.
 	 */
 	long maxMessages = -1;
 

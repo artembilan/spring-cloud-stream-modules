@@ -19,11 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.stream.config.SpelExpressionConverterConfiguration;
 import org.springframework.cloud.stream.module.MaxMessagesProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.dsl.core.Pollers;
+import org.springframework.context.annotation.Import;
 import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.CronTrigger;
@@ -35,6 +36,7 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  */
 @Configuration
 @EnableConfigurationProperties({TriggerProperties.class, MaxMessagesProperties.class})
+@Import(SpelExpressionConverterConfiguration.class)
 public class TriggerConfiguration {
 
 	@Autowired
@@ -45,7 +47,14 @@ public class TriggerConfiguration {
 
 	@Bean
 	public PollerMetadata defaultPoller(Trigger trigger) {
-		return Pollers.trigger(trigger).maxMessagesPerPoll(this.maxMessagesProperties.getMaxMessages()).get();
+		PollerMetadata pollerMetadata = new PollerMetadata();
+		pollerMetadata.setTrigger(trigger);
+		// the default is 1 since a source might return
+		// a non-null and non-interruptible value every time it is invoked
+		pollerMetadata.setMaxMessagesPerPoll(this.maxMessagesProperties.getMaxMessages() > -1
+				? this.maxMessagesProperties.getMaxMessages()
+				: 1);
+		return pollerMetadata;
 	}
 
 	@Bean(name = TriggerConstants.TRIGGER_BEAN_NAME)
@@ -84,4 +93,5 @@ public class TriggerConfiguration {
 		}
 
 	}
+
 }

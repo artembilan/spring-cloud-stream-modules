@@ -19,14 +19,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.ValidationException;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.Min;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.expression.Expression;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.common.LiteralExpression;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,15 +35,13 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties
 public class TriggerProperties {
 
-	private static final SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
-
 	/**
-	 * Fixed delay for periodic triggers. Default is 1 TimeUnit. 
+	 * Fixed delay for periodic triggers. Default is 1 TimeUnit.
 	 */
 	private int fixedDelay = 1;
 
 	/**
-	 * Initial delay for periodic triggers. Default is 0. 
+	 * Initial delay for periodic triggers. Default is 0.
 	 */
 	private int initialDelay = 0;
 
@@ -61,14 +58,14 @@ public class TriggerProperties {
 	/**
 	 * Format for the date value.
 	 */
-	private String dateFormat;
+	private String dateFormat = TriggerConstants.DATE_FORMAT;
 
 	/**
 	 * Cron expression value for the Cron Trigger.
 	 */
 	private String cron;
 
-	private String payload = "''";
+	private Expression payload = new LiteralExpression("");
 
 	@Min(0)
 	public int getInitialDelay() {
@@ -104,11 +101,16 @@ public class TriggerProperties {
 	}
 
 	public Date getDate() {
-		try {
-			return this.getDateFormat().parse(date);
+		if (StringUtils.hasText(this.date)) {
+			try {
+				return this.getDateFormat().parse(this.date);
+			}
+			catch (ParseException e) {
+				throw new ValidationException("Invalid date value :" + this.date);
+			}
 		}
-		catch (ParseException e) {
-			throw new ValidationException("Invalid date value :" + this.date);
+		else {
+			return null;
 		}
 	}
 
@@ -117,24 +119,25 @@ public class TriggerProperties {
 	}
 
 	public SimpleDateFormat getDateFormat() {
-		String dateFormatString = StringUtils.isEmpty(this.dateFormat) ? TriggerConstants.DATE_FORMAT : dateFormat;
+		if (!StringUtils.hasText(this.dateFormat)) {
+			throw new ValidationException("'dateFormat' must not be empty.");
+		}
 		try {
-			return new SimpleDateFormat(dateFormatString);
+			return new SimpleDateFormat(this.dateFormat);
 		}
 		catch (IllegalArgumentException e) {
 			throw new ValidationException("Invalid Date format for the string: " + this.dateFormat);
 		}
 	}
-
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
 	}
 
 	public Expression getPayload() {
-		return spelExpressionParser.parseExpression(this.payload);
+		return this.payload;
 	}
 
-	public void setPayload(String payload) {
+	public void setPayload(Expression payload) {
 		this.payload = payload;
 	}
 
@@ -142,4 +145,5 @@ public class TriggerProperties {
 	public boolean isMutuallyExclusive() {
 		return this.date != null && this.cron != null && this.fixedDelay != 1;
 	}
+
 }

@@ -19,9 +19,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.cloud.stream.module.MaxMessagesProperties;
+import org.springframework.cloud.stream.module.annotation.MessageSource;
 import org.springframework.context.annotation.Import;
-import org.springframework.integration.annotation.InboundChannelAdapter;
-import org.springframework.integration.annotation.Poller;
 
 /**
  * Trigger source module.
@@ -30,13 +29,13 @@ import org.springframework.integration.annotation.Poller;
  */
 @EnableBinding(Source.class)
 @EnableConfigurationProperties({TriggerProperties.class, MaxMessagesProperties.class})
-@Import({TriggerConfiguration.class})
+@Import(TriggerConfiguration.class)
 public class TriggerSource {
 
 	@Autowired
 	private TriggerProperties config;
 
-	@InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller(trigger = TriggerConstants.TRIGGER_BEAN_NAME))
+	@MessageSource
 	public Object triggerSource() {
 		return this.config.getPayload().getValue();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2015-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,15 @@
 
 package org.springframework.cloud.stream.module.time;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
+import org.springframework.cloud.stream.module.annotation.MessageSource;
 import org.springframework.cloud.stream.module.trigger.TriggerConfiguration;
-import org.springframework.cloud.stream.module.trigger.TriggerConstants;
+import org.springframework.cloud.stream.module.trigger.TriggerProperties;
 import org.springframework.context.annotation.Import;
-import org.springframework.integration.annotation.InboundChannelAdapter;
-import org.springframework.integration.annotation.Poller;
 
 /**
  * @author Dave Syer
@@ -35,17 +32,15 @@ import org.springframework.integration.annotation.Poller;
  * @author Marius Bogoevici
  */
 @EnableBinding(Source.class)
-@EnableConfigurationProperties(TimeSourceProperties.class)
 @Import(TriggerConfiguration.class)
 public class TimeSource {
 
 	@Autowired
-	private TimeSourceProperties properties;
+	private TriggerProperties properties;
 
-	@InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller(
-			trigger = TriggerConstants.TRIGGER_BEAN_NAME, maxMessagesPerPoll = "1"))
+	@MessageSource
 	public String publishTime() {
-		return new SimpleDateFormat(this.properties.getFormat()).format(new Date());
+		return this.properties.getDateFormat().format(new Date());
 	}
 
 }

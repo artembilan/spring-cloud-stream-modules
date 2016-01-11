@@ -26,4 +26,5 @@ public class TriggerSourceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TriggerSourceApplication.class, args);
 	}
+
 }
