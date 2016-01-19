@@ -38,7 +38,6 @@ import org.springframework.integration.scheduling.PollerMetadata;
 
 /**
  * A module that reads data from an RDBMS using JDBC and creates a payload with the data.
- *
  * @author Thomas Risberg
  */
 @EnableBinding(Source.class)
@@ -63,9 +62,9 @@ public class JdbcSourceConfiguration {
 	@Bean
 	public MessageSource<Object> jdbcMessageSource() {
 		JdbcPollingChannelAdapter jdbcPollingChannelAdapter =
-				new JdbcPollingChannelAdapter(dataSource, properties.getQuery());
-		jdbcPollingChannelAdapter.setMaxRowsPerPoll(properties.getMaxRowsPerPoll());
-		jdbcPollingChannelAdapter.setUpdateSql(properties.getUpdate());
+				new JdbcPollingChannelAdapter(this.dataSource, this.properties.getQuery());
+		jdbcPollingChannelAdapter.setMaxRowsPerPoll(this.properties.getMaxRowsPerPoll());
+		jdbcPollingChannelAdapter.setUpdateSql(this.properties.getUpdate());
 		return jdbcPollingChannelAdapter;
 	}
 
@@ -73,17 +72,18 @@ public class JdbcSourceConfiguration {
 	public IntegrationFlow pollingFlow() {
 		IntegrationFlowBuilder flowBuilder = IntegrationFlows.from(jdbcMessageSource(),
 				new Consumer<SourcePollingChannelAdapterSpec>() {
+
 					@Override
 					public void accept(SourcePollingChannelAdapterSpec sourcePollingChannelAdapterSpec) {
-						sourcePollingChannelAdapterSpec
-								.autoStartup(false)
-								.poller(poller);
+						sourcePollingChannelAdapterSpec.poller(poller);
 					}
+
 				});
-		if (properties.isSplit()) {
+		if (this.properties.isSplit()) {
 			flowBuilder.split();
 		}
-		flowBuilder.channel(source.output());
+		flowBuilder.channel(this.source.output());
 		return flowBuilder.get();
 	}
+
 }

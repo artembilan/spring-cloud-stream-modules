@@ -43,12 +43,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Integration Tests for JdbcSource. Uses hsqldb as a (real) embedded DB.
- *
  * @author Thomas Risberg
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {JdbcSourceApplication.class, EmbeddedDataSourceConfiguration.class})
-@IntegrationTest({"server.port=-1"})
 @DirtiesContext
 public abstract class JdbcSourceIntegrationTests {
 
@@ -62,7 +60,7 @@ public abstract class JdbcSourceIntegrationTests {
 	@Autowired
 	protected MessageCollector messageCollector;
 
-	@IntegrationTest(value = {"query=select id, name from test order by id"})
+	@IntegrationTest("query=select id, name from test order by id")
 	public static class DefaultBehaviorTests extends JdbcSourceIntegrationTests {
 
 		@Test
@@ -80,6 +78,7 @@ public abstract class JdbcSourceIntegrationTests {
 			assertThat(received.getPayload(), Matchers.instanceOf(Map.class));
 			assertEquals(3L, ((Map) received.getPayload()).get("ID"));
 		}
+
 	}
 
 	@IntegrationTest(value = {"query=select id, name, tag from test where tag is NULL order by id", "split=false"})
@@ -94,6 +93,7 @@ public abstract class JdbcSourceIntegrationTests {
 			assertEquals(1L, ((Map) ((List) received.getPayload()).get(0)).get("ID"));
 			assertEquals("John", ((Map) ((List) received.getPayload()).get(2)).get("NAME"));
 		}
+
 	}
 
 	@IntegrationTest(value = {"query=select id, name from test order by id", "fixedDelay=600"})
@@ -120,6 +120,7 @@ public abstract class JdbcSourceIntegrationTests {
 			received = messageCollector.forChannel(source.output()).poll(1, TimeUnit.SECONDS);
 			assertNull(received);
 		}
+
 	}
 
 	@IntegrationTest(value = {"query=select id, name from test order by id", "fixedDelay=1"})
@@ -145,6 +146,7 @@ public abstract class JdbcSourceIntegrationTests {
 			assertThat(received.getPayload(), Matchers.instanceOf(Map.class));
 			assertEquals(1L, ((Map) received.getPayload()).get("ID"));
 		}
+
 	}
 
 	@IntegrationTest(value = {"query=select id, name, tag from test where tag is NULL order by id", "split=false",
@@ -165,6 +167,7 @@ public abstract class JdbcSourceIntegrationTests {
 			assertEquals(1, ((List) received.getPayload()).size());
 			assertEquals(3L, ((Map) ((List) received.getPayload()).get(0)).get("ID"));
 		}
+
 	}
 
 }
