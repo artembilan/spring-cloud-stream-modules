@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -35,7 +36,7 @@ import org.springframework.integration.scripting.ScriptVariableGenerator;
 
 /**
  * A Processor module that transforms messages using a supplied script. The script
- * code is passed in directly via property. For more information on Spring script 
+ * code is passed in directly via property. For more information on Spring script
  * processing, see
  * <a href=
  * "https://spring.io/blog/2011/12/08/spring-integration-scripting-support-part-1">
@@ -63,17 +64,23 @@ public class ScriptableTransformProcessor {
 	@Bean
 	@Transformer(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)
 	public MessageProcessor<?> transformer() {
-		String language = properties.getLanguage();
-		String script = properties.getScript();
+		String language = this.properties.getLanguage();
+		String script = this.properties.getScript();
 		logger.info("Input script is '{}', language is '{}'", script, language);
 		Resource scriptResource = new ByteArrayResource(decodeScript(script).getBytes()) {
+
+			// TODO until INT-3976
 			@Override
 			public String getFilename() {
 				// Only the groovy script processor enforces this requirement for a name
 				return "StaticScript";
 			}
+
 		};
-		return Scripts.script(scriptResource).lang(language).variableGenerator(scriptVariableGenerator).get();
+		return Scripts.script(scriptResource)
+				.lang(language)
+				.variableGenerator(this.scriptVariableGenerator)
+				.get();
 	}
 
 	private static String decodeScript(String script) {

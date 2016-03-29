@@ -1,7 +1,7 @@
 = Spring Cloud Stream Scriptable Transform Processor
 
 A *Spring Cloud Stream* module that transforms messages using a script. The script body is supplied directly
-as a property value. The language of the script can be specified (groovy/javascript/ruby).
+as a property value. The language of the script can be specified (groovy/javascript/ruby/python).
 
 == Requirements
 
@@ -32,25 +32,25 @@ $> java -jar target/scriptable-transform-processor-${version}-exec.jar
 ## Installing in Spring Cloud Dataflow
 
 ```
-XD> module register --name scriptable --coordinates org.springframework.cloud.stream.module:scriptable-transform-processor:jar:exec:1.0.0.BUILD-SNAPSHOT --type processor
+dataflow> module register --name scriptable --coordinates org.springframework.cloud.stream.module:scriptable-transform-processor:jar:exec:1.0.0.BUILD-SNAPSHOT --type processor
 ```
 
 ## Using in a Spring Cloud Dataflow stream definition
 
 ```
-XD> stream create --deploy true --name demog --definition "time | scriptable --script=\"return payload+'::'+payload\" --language=groovy | log"
+dataflow> stream create --deploy true --name demog --definition "time | scriptable --script=\"return payload+'::'+payload\" --language=groovy | log"
 ```
 
 ```
-XD> stream create --deploy true --name demor --definition "time | scriptable --script=\"return \"\"#{payload.upcase}\"\"\" --language=ruby | log"
+dataflow> stream create --deploy true --name demor --definition "time | scriptable --script=\"return \"\"#{payload.upcase}\"\"\" --language=ruby | log"
 ```
 
 ```
-XD> stream create --deploy true --name demojs --definition "time | scriptable --script=\"function double(a) {\\n return a+''+a;\\n}\\ndouble(payload);\" --language=js | log"
+dataflow> stream create --deploy true --name demojs --definition "time | scriptable --script=\"function double(a) {\\n return a+''+a;\\n}\\ndouble(payload);\" --language=js | log"
 ```
 
 Python is not currently working but when it does it will look like this!
 
 ```
-XD> stream create --deploy true --name demop --definition "time | scriptable --script=\"def concat(x,y):\\n  return x+y\\nanswer = concat(\"\"hello \"\",payload)\\n\" --language=python | log"
+dataflow> stream create --deploy true --name demop --definition "time | scriptable --script=\"def concat(x,y):\\n  return x+y\\nanswer = concat(\"\"hello \"\",payload)\\n\" --language=python | log"
 ```

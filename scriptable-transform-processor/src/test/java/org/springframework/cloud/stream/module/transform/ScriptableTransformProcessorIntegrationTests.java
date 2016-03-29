@@ -22,6 +22,7 @@ import static org.springframework.cloud.stream.test.matcher.MessageQueueMatcher.
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -50,9 +51,9 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 	@Autowired
 	protected MessageCollector collector;
 
-	@WebIntegrationTest({ "script=function add(a,b) { return a+b;};add(1,3)", "language=js",
-			"variables=limit=5\\n foo=\\\\\40WORLD" })
+	@WebIntegrationTest({"script=function add(a,b) { return a+b;};add(1,3)", "language=js"})
 	public static class JavascriptScriptProperty1Tests extends ScriptableTransformProcessorIntegrationTests {
+
 		@Test
 		public void testJavascriptFunctions() {
 			channels.input().send(new GenericMessage<Object>("hello world"));
@@ -60,7 +61,7 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 		}
 	}
 
-	@WebIntegrationTest({ "script=payload+foo", "language=js", "variables=limit=5\\n foo=\\\\\40WORLD" })
+	@WebIntegrationTest({"script=payload+foo", "language=js", "variables=foo=\\\\\40WORLD"})
 	public static class JavascriptScriptProperty2Tests extends ScriptableTransformProcessorIntegrationTests {
 
 		@Test
@@ -70,8 +71,8 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 		}
 
 	}
-	
-	@WebIntegrationTest({ "script=payload*limit", "language=js", "variables=limit=5\\n foo=\\\\\40WORLD" })
+
+	@WebIntegrationTest({"script=payload*limit", "language=js", "variables=limit=5"})
 	public static class JavascriptScriptProperty3Tests extends ScriptableTransformProcessorIntegrationTests {
 
 		@Test
@@ -82,7 +83,7 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 
 	}
 
-	@WebIntegrationTest({ "script=payload+foo", "language=groovy", "variables=limit=5\\n foo=\\\\\40WORLD" })
+	@WebIntegrationTest({"script=payload+foo", "language=groovy", "variables=foo=\\\\\40WORLD"})
 	public static class GroovyScriptProperty1Tests extends ScriptableTransformProcessorIntegrationTests {
 
 		@Test
@@ -93,8 +94,8 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 
 	}
 
-	@WebIntegrationTest({ "script=payload.substring(0, limit as int) + foo", "language=groovy",
-			"variables=limit=5\\n foo=\\\\\40WORLD" })
+	@WebIntegrationTest({"script=payload.substring(0, limit as int) + foo", "language=groovy",
+			"variables=limit=5\\n foo=\\\\\40WORLD"})
 	public static class GroovyScriptProperty2Tests extends ScriptableTransformProcessorIntegrationTests {
 
 		@Test
@@ -105,8 +106,7 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 
 	}
 
-	@WebIntegrationTest({ "script=return \"\"#{payload.upcase}\"\"", "language=ruby",
-			"variables=limit=5\\n foo=\\\\\40WORLD" })
+	@WebIntegrationTest({"script=return \"\"#{payload.upcase}\"\"", "language=ruby"})
 	public static class RubyScriptProperty1Tests extends ScriptableTransformProcessorIntegrationTests {
 
 		@Test
@@ -117,8 +117,7 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 
 	}
 
-	@WebIntegrationTest({ "script=\"def foo(x)\\n  return x+5\\nend\\nfoo(payload)\\n\"", "language=ruby",
-			"variables=limit=5\\n foo=\\\\\40WORLD" })
+	@WebIntegrationTest({"script=\"def foo(x)\\n  return x+5\\nend\\nfoo(payload)\\n\"", "language=ruby"})
 	public static class RubyScriptProperty2Tests extends ScriptableTransformProcessorIntegrationTests {
 
 		@Test
@@ -130,29 +129,29 @@ public abstract class ScriptableTransformProcessorIntegrationTests {
 	}
 
 	// Python not currently supported, problems running it in SCDF
-	
-//	@WebIntegrationTest({ "script=\"def multiply(x,y):\\n  return x*y\\nanswer = multiply(payload,5)\\n\"",
-//			"language=python", "variables=limit=5\\n foo=\\\\\40WORLD" })
-//	public static class PythonScriptProperty1Tests extends ScriptableTransformProcessorIntegrationTests {
-//
-//		@Test
-//		public void testPython() {
-//			channels.input().send(new GenericMessage<Object>(6));
-//			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(is(30)));
-//		}
-//
-//	}
-//	
-//	@WebIntegrationTest({ "script=\"def concat(x,y):\\n  return x+y\\nanswer = concat(\"\"hello \"\",payload)\\n\"",
-//			"language=python", "variables=limit=5\\n foo=\\\\\40WORLD" })
-//	public static class PythonScriptProperty2Tests extends ScriptableTransformProcessorIntegrationTests {
-//
-//		@Test
-//		public void testPython() {
-//			channels.input().send(new GenericMessage<Object>("world"));
-//			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(is("hello world")));
-//		}
-//
-//	}
+
+	@WebIntegrationTest({"script=\"def multiply(x,y):\\n  return x*y\\nanswer = multiply(payload,5)\\n\"",
+			"language=python"})
+	public static class PythonScriptProperty1Tests extends ScriptableTransformProcessorIntegrationTests {
+
+		@Test
+		public void testPython() {
+			channels.input().send(new GenericMessage<Object>(6));
+			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(is(30)));
+		}
+
+	}
+
+	@WebIntegrationTest({"script=\"def concat(x,y):\\n  return x+y\\nanswer = concat(\"\"hello \"\",payload)\\n\"",
+			"language=python"})
+	public static class PythonScriptProperty2Tests extends ScriptableTransformProcessorIntegrationTests {
+
+		@Test
+		public void testPython() {
+			channels.input().send(new GenericMessage<Object>("world"));
+			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(is("hello world")));
+		}
+
+	}
 
 }

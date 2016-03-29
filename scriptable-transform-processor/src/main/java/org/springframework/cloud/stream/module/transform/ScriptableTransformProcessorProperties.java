@@ -28,21 +28,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ScriptableTransformProcessorProperties {
 
 	/**
-	 * Language of the text in the script property. Supported: groovy, javascript, ruby.
+	 * Language of the text in the script property. Supported: groovy, javascript, ruby, python.
 	 */
 	@NotNull
 	private String language;
 
 	/*
 	 * Extra notes on the script parameter. The UI will typically look after encoding
-	 * newlines and double quotes when packaging the value to pass to the script 
+	 * newlines and double quotes when packaging the value to pass to the script
 	 * property. If not using the UI, attempting to define
 	 * a script directly in the shell for example, it is important to note:
 	 * - newlines should be escaped (\\n)
 	 * - a single " should be expressed in a pair "" - the DSL parser recognizes this pattern
 	 * - If the script starts and ends with a " then they will be stripped off before treating what is
 	 *   left as the script.
-	 * 
+	 *
 	 * Examples:
 	 * ruby: --script="return ""#{payload.upcase}"""
 	 * javascript: --script="function double(a) {\\n return a+"" + ""+a;\\n}\\ndouble(payload);"
